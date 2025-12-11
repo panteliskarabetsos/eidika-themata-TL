@@ -1,11 +1,9 @@
-// src/app/api/patients/route.js
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { initDb } from "../../../lib/initDb";
 import Patient from "../../../models/Patient";
 
-// GET /api/patients
 export async function GET() {
   try {
     await initDb();
@@ -21,7 +19,6 @@ export async function GET() {
   }
 }
 
-// POST /api/patients
 export async function POST(request) {
   try {
     await initDb();

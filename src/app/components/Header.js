@@ -1,4 +1,3 @@
-// src/components/Header.js
 "use client";
 
 import Link from "next/link";
@@ -19,7 +18,7 @@ export default function Header() {
         setUserName(parsed.fullName || parsed.username || "");
       }
     } catch {
-      // ignore parse errors
+      // ignore
     }
   }, []);
 
@@ -47,25 +46,13 @@ export default function Header() {
       <div className="top-bar-inner">
         {/* Brand + title (left) */}
         <div className="top-bar-left">
-          <button
-            type="button"
-            className="brand-mark"
-            onClick={() => router.push("/appointments")}
-            aria-label="Δημιουργία νέου ραντεβού"
-          >
-            <span className="brand-cross">+</span>
-          </button>
-
           <div className="app-title-wrap">
             <div className="app-title-row">
-              <h1 className="app-title">Clinic Admin</h1>
-              <span className="app-title-pill">Appointment System</span>
+              <h1 className="app-title">Πίνακας διαχείρισης ιατρείου</h1>
             </div>
-            <span className="app-subtitle">Πίνακας διαχείρισης ιατρείου</span>
           </div>
         </div>
 
-        {/* Centered navigation */}
         <nav className="top-nav">
           <Link
             href="/dashboard"
@@ -96,7 +83,6 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* User block (right) */}
         <div className="header-user">
           <div className="header-user-avatar">{initials}</div>
           <div className="header-user-info">

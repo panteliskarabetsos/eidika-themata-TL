@@ -1,9 +1,9 @@
-// src/app/dashboard/page.js
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -52,7 +52,7 @@ export default function DashboardPage() {
 
       if (!patientsRes.ok) {
         const t = await patientsRes.text();
-        console.error("Failed to fetch patients for dashboard:", t);
+        console.error("patients fetch failed:", t);
         setError("Αποτυχία φόρτωσης ασθενών");
         setLoading(false);
         return;
@@ -60,7 +60,7 @@ export default function DashboardPage() {
 
       if (!appointmentsRes.ok) {
         const t = await appointmentsRes.text();
-        console.error("Failed to fetch appointments for dashboard:", t);
+        console.error("appointmnets fetch failed:", t);
         setError("Αποτυχία φόρτωσης ραντεβού");
         setLoading(false);
         return;
@@ -70,11 +70,11 @@ export default function DashboardPage() {
       const appointmentsData = await appointmentsRes.json();
 
       setPatientCount(patients.length);
-      setLatestPatient(patients[0] || null); // πιο πρόσφατος (order DESC από route)
+      setLatestPatient(patients[0] || null);
       setAppointments(appointmentsData);
     } catch (err) {
       console.error(err);
-      setError("Απρόσμενο σφάλμα");
+      setError("Σφάλμα");
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ export default function DashboardPage() {
     router.push("/login");
   }
 
-  // Υπολογισμοί για τα ραντεβού
+  //υπολογισμοί για τα ραντεβού
   const totalAppointments = appointments.length;
 
   const todayAppointmentsCount = useMemo(() => {
@@ -127,21 +127,17 @@ export default function DashboardPage() {
 
   return (
     <main className="page">
-      {/* Top bar */}
       <header className="top-bar">
         <div className="top-bar-left">
           <h1 className="app-title">Clinic Appointment System</h1>
           <span className="app-subtitle">Πίνακας διαχείρισης</span>
         </div>
       </header>
-
-      {/* Κεντρικό περιεχόμενο */}
       <section className="dashboard-grid">
-        {/* Κάρτες στατιστικών */}
         <div className="card">
           <h2 className="card-title">Επισκόπηση</h2>
           <p className="card-subtitle">
-            Γρήγορη ματιά στα βασικά στοιχεία του ιατρείου.
+            Επισκόπιση βασικών στατιστικών και πληροφοριών.
           </p>
 
           {loading ? (
@@ -154,7 +150,10 @@ export default function DashboardPage() {
                 <div className="stat-label">Σύνολο ασθενών</div>
                 <div className="stat-value">{patientCount}</div>
                 <div className="stat-helper">
-                  <Link href="/patients">Προβολή λίστας ασθενών →</Link>
+                  <Link href="/patients" className="link-with-icon">
+                    <ArrowRight size={16} className="icon-left" />
+                    <span>Προβολή λίστας ασθενών</span>
+                  </Link>
                 </div>
               </div>
 
@@ -162,7 +161,10 @@ export default function DashboardPage() {
                 <div className="stat-label">Συνολικά ραντεβού</div>
                 <div className="stat-value">{totalAppointments}</div>
                 <div className="stat-helper">
-                  <Link href="/appointments">Προβολή όλων των ραντεβού →</Link>
+                  <Link href="/appointments" className="link-with-icon">
+                    <ArrowRight size={16} className="icon-left" />
+                    <span>Προβολή λίστας ραντεβού</span>
+                  </Link>
                 </div>
               </div>
 
@@ -173,39 +175,10 @@ export default function DashboardPage() {
                   Προγραμματισμένα ραντεβού για τη σημερινή ημερομηνία.
                 </div>
               </div>
-
-              <div className="stat-card">
-                <div className="stat-label">Επόμενο ραντεβού</div>
-                {nextAppointment ? (
-                  <>
-                    <div className="stat-value">
-                      {nextAppointment.Patient
-                        ? `${nextAppointment.Patient.firstName} ${nextAppointment.Patient.lastName}`
-                        : "—"}
-                    </div>
-                    <div className="stat-helper">
-                      {nextAppointment.dateTime
-                        ? new Date(nextAppointment.dateTime).toLocaleString(
-                            "el-GR",
-                            {
-                              dateStyle: "short",
-                              timeStyle: "short",
-                            }
-                          )
-                        : "-"}
-                    </div>
-                  </>
-                ) : (
-                  <div className="stat-helper">
-                    Δεν υπάρχει επόμενο προγραμματισμένο ραντεβού.
-                  </div>
-                )}
-              </div>
             </div>
           )}
         </div>
 
-        {/* Γρήγορες ενέργειες */}
         <div className="card">
           <h2 className="card-title">Γρήγορες ενέργειες</h2>
           <p className="card-subtitle">
@@ -227,7 +200,7 @@ export default function DashboardPage() {
               </div>
             </Link>
 
-            <div className="quick-action quick-action--disabled">
+            <div className="quick-action ">
               <div className="quick-action-title">Ημερολόγιο ημέρας</div>
               <div className="quick-action-desc">
                 Επισκόπηση ραντεβού ανά ημέρα (υπό ανάπτυξη).

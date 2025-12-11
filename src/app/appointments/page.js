@@ -1,4 +1,3 @@
-// src/app/appointments/page.js
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
@@ -14,7 +13,7 @@ export default function AppointmentsPage() {
   const [error, setError] = useState("");
   const [filterDate, setFilterDate] = useState("");
 
-  // φόρμα δημιουργίας
+  //φόρμα δημιουργίας
   const [form, setForm] = useState({
     patientId: "",
     date: "",
@@ -22,8 +21,7 @@ export default function AppointmentsPage() {
     durationMinutes: 30,
     reason: "",
   });
-
-  // --- ΝΕΑ STATE για edit/delete ---
+  //φόρμα επεξεργασίας
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({
     date: "",
@@ -68,14 +66,14 @@ export default function AppointmentsPage() {
       if (!patientsRes.ok) {
         const t = await patientsRes.text();
         console.error("Patients error:", t);
-        setError("Αποτυχία φόρτωσης ασθενών");
+        setError("Σφάλμα φόρτωσης ασθενών");
         return;
       }
 
       if (!appointmentsRes.ok) {
         const t = await appointmentsRes.text();
         console.error("Appointments error:", t);
-        setError("Αποτυχία φόρτωσης ραντεβού");
+        setError("Σφάλμα φόρτωσης ραντεβού");
         return;
       }
 
@@ -86,7 +84,7 @@ export default function AppointmentsPage() {
       setAppointments(appointmentsData);
     } catch (err) {
       console.error(err);
-      setError("Απρόσμενο σφάλμα");
+      setError("σφάλμα");
     } finally {
       setLoading(false);
     }
@@ -128,7 +126,7 @@ export default function AppointmentsPage() {
       if (!res.ok) {
         const t = await res.text();
         console.error("Create appointment error:", t);
-        setError(t || "Αποτυχία δημιουργίας ραντεβού");
+        setError(t || "Σφάλμα δημιουργίας ραντεβού");
         return;
       }
 
@@ -158,15 +156,12 @@ export default function AppointmentsPage() {
     router.push("/login");
   }
 
-  // -------- EDIT ΛΟΓΙΚΗ --------
-
   function startEdit(appointment) {
     const d = appointment.dateTime ? new Date(appointment.dateTime) : null;
 
     let date = "";
     let time = "";
     if (d) {
-      // προσοχή: χρήση UTC, αλλά είναι ΟΚ για basic χρήση
       date = d.toISOString().slice(0, 10); // YYYY-MM-DD
       time = d.toTimeString().slice(0, 5); // HH:MM
     }
@@ -193,7 +188,7 @@ export default function AppointmentsPage() {
     if (!editingId) return;
 
     if (!editForm.date || !editForm.time) {
-      setError("Ημερομηνία και ώρα είναι υποχρεωτικά για την επεξεργασία.");
+      setError("Η Ημερομηνία και ώρα είναι υποχρεωτικά για την επεξεργασία.");
       return;
     }
 
@@ -220,7 +215,7 @@ export default function AppointmentsPage() {
       if (!res.ok) {
         const t = await res.text();
         console.error("Update appointment error:", t);
-        setError(t || "Αποτυχία ενημέρωσης ραντεβού");
+        setError(t || "Σφάλμα ενημέρωσης ραντεβού");
         return;
       }
 
@@ -248,8 +243,6 @@ export default function AppointmentsPage() {
     });
   }
 
-  // -------- DELETE ΛΟΓΙΚΗ --------
-
   async function handleDelete(id) {
     const ok = window.confirm("Θέλεις σίγουρα να διαγράψεις αυτό το ραντεβού;");
     if (!ok) return;
@@ -268,7 +261,7 @@ export default function AppointmentsPage() {
       if (!res.ok) {
         const t = await res.text();
         console.error("Delete appointment error:", t);
-        setError(t || "Αποτυχία διαγραφής ραντεβού");
+        setError(t || "Σφάλμα διαγραφής ραντεβού");
         return;
       }
 
@@ -279,13 +272,13 @@ export default function AppointmentsPage() {
       }
     } catch (err) {
       console.error(err);
-      setError("Απρόσμενο σφάλμα κατά τη διαγραφή ραντεβού");
+      setError("Σφάλμα κατά τη διαγραφή ραντεβού");
     } finally {
       setDeletingId(null);
     }
   }
 
-  // -------- ΦΙΛΤΡΑΡΙΣΜΑ --------
+  //φίλτρα
 
   const filteredAppointments = useMemo(() => {
     if (!filterDate) return appointments;
@@ -310,7 +303,7 @@ export default function AppointmentsPage() {
       </header>
 
       <section className="content-grid">
-        {/* Φόρμα δημιουργίας ραντεβού */}
+        {/* φορμα δημιουργίας ραντεβού */}
         <div className="card">
           <h2 className="card-title">Νέο ραντεβού</h2>
           <p className="card-subtitle">
@@ -393,7 +386,7 @@ export default function AppointmentsPage() {
           </form>
         </div>
 
-        {/* Λίστα ραντεβού */}
+        {/* λίστα ραντεβού */}
         <div className="card">
           <div className="card-header-row">
             <div>
@@ -414,7 +407,7 @@ export default function AppointmentsPage() {
             </div>
           </div>
 
-          {/* Panel επεξεργασίας όταν έχει επιλεγεί ραντεβού */}
+          {/* φόρμα επεξεργασίας ραντεβού */}
           {editingId && (
             <div
               className="card"

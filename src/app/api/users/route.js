@@ -1,4 +1,3 @@
-// src/app/api/users/route.js
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
@@ -6,7 +5,6 @@ import { initDb } from "../../../lib/initDb";
 import User from "../../../models/User";
 import bcrypt from "bcryptjs";
 
-// GET /api/users
 export async function GET() {
   try {
     await initDb();
@@ -29,7 +27,6 @@ export async function GET() {
   }
 }
 
-// POST /api/users
 export async function POST(request) {
   try {
     await initDb();

@@ -1,4 +1,3 @@
-// src/components/Footer.js
 "use client";
 
 export default function Footer() {
@@ -9,7 +8,7 @@ export default function Footer() {
           Εργασία μαθήματος «Ειδικά Θέματα Τεχνολογίας Λογισμικού» 2025–26
         </div>
         <div className="app-footer-sub">
-          Τμήμα Μηχανικών Πληροφορικής και Υπολογιστών · ΠΑΔΑ
+          Τμήμα Μηχανικών Πληροφορικής και Υπολογιστών | ΠΑΔΑ
         </div>
       </div>
     </footer>

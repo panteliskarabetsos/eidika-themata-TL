@@ -1,4 +1,3 @@
-// src/app/api/auth/login/route.js
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";

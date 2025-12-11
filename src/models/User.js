@@ -1,4 +1,3 @@
-// models/User.js
 import { DataTypes, Model } from "sequelize";
 import sequelize from "@/lib/sequelize.js";
 
@@ -39,7 +38,7 @@ User.init(
     sequelize,
     modelName: "User",
     tableName: "users",
-    timestamps: true, // createdAt, updatedAt
+    timestamps: true,
   }
 );
 

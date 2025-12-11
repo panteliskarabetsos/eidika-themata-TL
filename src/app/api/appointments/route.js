@@ -1,4 +1,3 @@
-// src/app/api/appointments/route.js
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
@@ -6,7 +5,6 @@ import { initDb } from "../../../lib/initDb.js";
 import Appointment from "../../../models/Appointment.js";
 import Patient from "../../../models/Patient.js";
 
-// GET /api/appointments
 export async function GET() {
   try {
     await initDb();
@@ -28,7 +26,6 @@ export async function GET() {
   }
 }
 
-// POST /api/appointments
 export async function POST(request) {
   try {
     await initDb();

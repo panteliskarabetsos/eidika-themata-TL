@@ -1,4 +1,3 @@
-// src/app/api/appointments/[id]/route.js
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
@@ -6,12 +5,9 @@ import { initDb } from "../../../../lib/initDb.js";
 import Appointment from "../../../../models/Appointment.js";
 import Patient from "../../../../models/Patient.js";
 
-// PUT /api/appointments/:id  -> ενημέρωση ραντεβού
 export async function PUT(request, context) {
   try {
     await initDb();
-
-    // 🔹 ΕΔΩ η αλλαγή: params είναι Promise
     const { id } = await context.params;
     const numericId = Number(id);
 
@@ -34,7 +30,7 @@ export async function PUT(request, context) {
       appointment.durationMinutes = Number(durationMinutes);
     }
     if (status) {
-      appointment.status = status; // 'scheduled' | 'completed' | 'cancelled'
+      appointment.status = status;
     }
     if (reason !== undefined) {
       appointment.reason = reason;
@@ -42,7 +38,6 @@ export async function PUT(request, context) {
 
     await appointment.save();
 
-    // reload με τον patient
     await appointment.reload({
       include: [
         {
@@ -59,12 +54,9 @@ export async function PUT(request, context) {
   }
 }
 
-// DELETE /api/appointments/:id  -> διαγραφή ραντεβού
 export async function DELETE(request, context) {
   try {
     await initDb();
-
-    // 🔹 Κι εδώ το ίδιο
     const { id } = await context.params;
     const numericId = Number(id);
 

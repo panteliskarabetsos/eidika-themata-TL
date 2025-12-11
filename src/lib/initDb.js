@@ -10,7 +10,7 @@ export async function initDb() {
 
   try {
     await sequelize.authenticate();
-    console.log("✅ Database connection established.");
+    console.log("Connected to database.");
 
     // Σχέσεις
     Patient.hasMany(Appointment, {
@@ -22,12 +22,12 @@ export async function initDb() {
       foreignKey: "patientId",
     });
 
-    await sequelize.sync({ alter: true });
-    console.log("✅ Models synchronized.");
+    await sequelize.sync();
+    console.log("Models synchronized.");
 
     isInitialized = true;
   } catch (err) {
-    console.error("❌ Unable to connect to the database:", err);
+    console.error("Unable to connect to the database:", err);
     throw err;
   }
 }
