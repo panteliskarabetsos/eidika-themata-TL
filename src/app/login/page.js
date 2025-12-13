@@ -1,4 +1,3 @@
-// src/app/login/page.js
 "use client";
 
 import { useState } from "react";
@@ -6,8 +5,8 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("admin2"); // για ευκολία
-  const [password, setPassword] = useState("123456"); // για ευκολία
+  const [username, setUsername] = useState("admin");
+  const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +30,7 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      // data.token, data.user
+
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));

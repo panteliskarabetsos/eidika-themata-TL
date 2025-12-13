@@ -2,78 +2,61 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { initDb } from "../../../../lib/initDb.js";
-import Appointment from "../../../../models/Appointment.js";
-import Patient from "../../../../models/Patient.js";
+import { createContainer } from "../../../../di/container.js";
 
-export async function PUT(request, context) {
+function parseNumericId(id) {
+  const numericId = Number(id);
+  if (!numericId || Number.isNaN(numericId)) return null;
+  return numericId;
+}
+
+export async function PUT(request, { params }) {
   try {
     await initDb();
-    const { id } = await context.params;
-    const numericId = Number(id);
 
-    if (!numericId || Number.isNaN(numericId)) {
-      return new NextResponse("Invalid appointment id", { status: 400 });
-    }
-
-    const appointment = await Appointment.findByPk(numericId);
-    if (!appointment) {
-      return new NextResponse("Appointment not found", { status: 404 });
+    const numericId = parseNumericId(params.id);
+    if (!numericId) {
+      return NextResponse.json(
+        { message: "Invalid appointment id" },
+        { status: 400 }
+      );
     }
 
     const body = await request.json();
-    const { dateTime, durationMinutes, status, reason } = body;
+    const { appointmentService } = createContainer();
+    const updated = await appointmentService.updateAppointment(numericId, body);
 
-    if (dateTime) {
-      appointment.dateTime = new Date(dateTime);
-    }
-    if (durationMinutes != null) {
-      appointment.durationMinutes = Number(durationMinutes);
-    }
-    if (status) {
-      appointment.status = status;
-    }
-    if (reason !== undefined) {
-      appointment.reason = reason;
-    }
-
-    await appointment.save();
-
-    await appointment.reload({
-      include: [
-        {
-          model: Patient,
-          attributes: ["id", "firstName", "lastName", "phone"],
-        },
-      ],
-    });
-
-    return NextResponse.json(appointment);
+    return NextResponse.json(updated, { status: 200 });
   } catch (err) {
     console.error("PUT /api/appointments/[id] error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+
+    const status = err?.status || 500;
+    const message = err?.message || "Internal Server Error";
+    return NextResponse.json({ message }, { status });
   }
 }
 
-export async function DELETE(request, context) {
+export async function DELETE(request, { params }) {
   try {
     await initDb();
-    const { id } = await context.params;
-    const numericId = Number(id);
 
-    if (!numericId || Number.isNaN(numericId)) {
-      return new NextResponse("Invalid appointment id", { status: 400 });
+    const numericId = parseNumericId(params.id);
+    if (!numericId) {
+      return NextResponse.json(
+        { message: "Invalid appointment id" },
+        { status: 400 }
+      );
     }
 
-    const appointment = await Appointment.findByPk(numericId);
-    if (!appointment) {
-      return new NextResponse("Appointment not found", { status: 404 });
-    }
-
-    await appointment.destroy();
+    const { appointmentService } = createContainer();
+    await appointmentService.deleteAppointment(numericId);
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     console.error("DELETE /api/appointments/[id] error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+
+    const status = err?.status || 500;
+    const message = err?.message || "Internal Server Error";
+    return NextResponse.json({ message }, { status });
   }
 }

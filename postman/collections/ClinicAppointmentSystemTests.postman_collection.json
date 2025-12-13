@@ -1,0 +1,478 @@
+{
+  "info": {
+    "_postman_id": "15f05d1b-695f-46ae-a2ac-e73b056fe66d",
+    "name": "ClinicAppointmentSystemTests",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Post data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "ce314f8f-3d1e-43b2-be23-54997574703b",
+            "exec": [
+              "pm.test(\"Successful POST request\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "pm.test(\"Status code is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const data = pm.response.json();",
+              "pm.environment.set(\"token\", data.token);",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "06fd8319-c17e-4ce0-978c-8e4cc3dbe56f",
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "id": "89718b9a-2af8-4706-9d7f-66f3f19d0b59",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+      },
+      "response": []
+    },
+    {
+      "name": "login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "533ae285-5c3c-4b99-a756-14eadc56e94f",
+            "exec": [
+              "// Graceful handling for non-JSON responses",
+              "let jsonData;",
+              "try {",
+              "    jsonData = pm.response.json();",
+              "} catch (e) {",
+              "    pm.test(\"Response is valid JSON\", function () {",
+              "        pm.expect.fail(\"Response is not valid JSON: \" + e.message);",
+              "    });",
+              "    return;",
+              "}",
+              "",
+              "// Test 1: Assert status is 200",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Test 2: Validate response time is below 1000ms",
+              "pm.test(\"Response time is below 1000ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+              "});",
+              "",
+              "// Test 3: Handle both single object and array responses",
+              "if (Array.isArray(jsonData)) {",
+              "    // If response is an array, validate each item",
+              "    pm.test(\"Array response - each item has required properties\", function () {",
+              "        jsonData.forEach((item, index) => {",
+              "            pm.expect(item, `Item ${index} missing token`).to.have.property(\"token\").that.is.a(\"string\");",
+              "            pm.expect(item, `Item ${index} missing user`).to.have.property(\"user\");",
+              "            pm.expect(item.user, `Item ${index} missing user.id`).to.have.property(\"id\").that.is.a(\"number\");",
+              "            pm.expect(item.user, `Item ${index} missing user.username`).to.have.property(\"username\").that.is.a(\"string\");",
+              "        });",
+              "    });",
+              "",
+              "    // Save token from first item if array",
+              "    if (jsonData.length > 0 && jsonData[0].token) {",
+              "        pm.environment.set(\"token\", jsonData[0].token);",
+              "    }",
+              "",
+              "    // Check for firstPatientId and firstAppointmentId in array items",
+              "    jsonData.forEach((item) => {",
+              "        if (item.firstPatientId !== undefined) {",
+              "            pm.environment.set(\"firstPatientId\", item.firstPatientId);",
+              "        }",
+              "        if (item.firstAppointmentId !== undefined) {",
+              "            pm.environment.set(\"firstAppointmentId\", item.firstAppointmentId);",
+              "        }",
+              "    });",
+              "} else {",
+              "    // Single object response",
+              "    pm.test(\"Response has token property (string)\", function () {",
+              "        pm.expect(jsonData).to.have.property(\"token\").that.is.a(\"string\");",
+              "    });",
+              "",
+              "    pm.test(\"Response has user.id property (number)\", function () {",
+              "        pm.expect(jsonData).to.have.property(\"user\");",
+              "        pm.expect(jsonData.user).to.have.property(\"id\").that.is.a(\"number\");",
+              "    });",
+              "",
+              "    pm.test(\"Response has user.username property (string)\", function () {",
+              "        pm.expect(jsonData.user).to.have.property(\"username\").that.is.a(\"string\");",
+              "    });",
+              "",
+              "    // Save token to environment variable",
+              "    if (jsonData.token) {",
+              "        pm.environment.set(\"token\", jsonData.token);",
+              "    }",
+              "",
+              "    // Save firstPatientId if present",
+              "    if (jsonData.firstPatientId !== undefined) {",
+              "        pm.environment.set(\"firstPatientId\", jsonData.firstPatientId);",
+              "    }",
+              "",
+              "    // Save firstAppointmentId if present",
+              "    if (jsonData.firstAppointmentId !== undefined) {",
+              "        pm.environment.set(\"firstAppointmentId\", jsonData.firstAppointmentId);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "5602eabb-2205-43fb-baf0-4d5b8e994ee0",
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "id": "c299ed85-73a2-4e4e-9ee8-1df8ce4f766c",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "patients",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "c60353e9-960c-490a-b39c-416db92cada1",
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "id": "3dba9841-0edd-4cc7-814b-fde2f85054c0",
+            "exec": [
+              "// 1) Assert response status is 200",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// 2) Assert response time is below 1000ms",
+              "pm.test(\"Response time is below 1000ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+              "});",
+              "",
+              "// 3) Assert response has JSON array",
+              "let jsonData;",
+              "try {",
+              "    jsonData = pm.response.json();",
+              "} catch (e) {",
+              "    pm.test(\"Response is valid JSON\", function () {",
+              "        pm.expect.fail(\"Response is not valid JSON: \" + e.message);",
+              "    });",
+              "    return;",
+              "}",
+              "",
+              "pm.test(\"Response is a JSON array\", function () {",
+              "    pm.expect(jsonData).to.be.an(\"array\");",
+              "});",
+              "",
+              "// 4) If array is non-empty, validate each item has required properties",
+              "if (Array.isArray(jsonData) && jsonData.length > 0) {",
+              "    const emailRegex = /^[^\\\\s@]+@[^\\\\s@]+\\\\.[^\\\\s@]+$/;",
+              "",
+              "    pm.test(\"Each patient has id (number), firstName (string), lastName (string), email (string matching email regex)\", function () {",
+              "        jsonData.forEach((patient, index) => {",
+              "            pm.expect(patient, `Patient at index ${index} missing id`).to.have.property(\"id\").that.is.a(\"number\");",
+              "            pm.expect(patient, `Patient at index ${index} missing firstName`).to.have.property(\"firstName\").that.is.a(\"string\");",
+              "            pm.expect(patient, `Patient at index ${index} missing lastName`).to.have.property(\"lastName\").that.is.a(\"string\");",
+              "            pm.expect(patient, `Patient at index ${index} missing email`).to.have.property(\"email\").that.is.a(\"string\");",
+              "            pm.expect(patient.email, `Patient at index ${index} email does not match email format`).to.match(emailRegex);",
+              "        });",
+              "    });",
+              "",
+              "    // 5) Extract and save first patient's id to collection variable 'firstPatientId'",
+              "    if (jsonData[0].id !== undefined && jsonData[0].id !== null) {",
+              "        pm.collectionVariables.set(\"firstPatientId\", jsonData[0].id);",
+              "    }",
+              "}",
+              "",
+              "// 6) Validate JWT token - decode payload and assert id and username exist",
+              "pm.test(\"JWT token payload contains id and username\", function () {",
+              "    const token = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImZ1bGxOYW1lIjoiQWRtaW4gVXNlciIsImlhdCI6MTc2NTQ3MzIxNCwiZXhwIjoxNzY1NDc2ODE0fQ.Ac5aMo662CgPx-rONmcoGn_JsYYeIWMoDNA3QsVaerR0\";",
+              "    ",
+              "    // Decode JWT payload (base64url decode the middle part)",
+              "    const parts = token.split(\".\");",
+              "    pm.expect(parts.length, \"JWT should have 3 parts\").to.equal(3);",
+              "    ",
+              "    // Base64url decode the payload",
+              "    let payload = parts[1];",
+              "    // Replace base64url characters with base64 characters",
+              "    payload = payload.replace(/-/g, \"+\").replace(/_/g, \"/\");",
+              "    // Add padding if needed",
+              "    while (payload.length % 4) {",
+              "        payload += \"=\";",
+              "    }",
+              "    ",
+              "    const decodedPayload = JSON.parse(atob(payload));",
+              "    ",
+              "    pm.expect(decodedPayload, \"JWT payload missing id\").to.have.property(\"id\");",
+              "    pm.expect(decodedPayload, \"JWT payload missing username\").to.have.property(\"username\");",
+              "});",
+              "",
+              "pm.test(\"Each patient has basic fields\", () => {",
+              "  const patients = pm.response.json();",
+              "  pm.expect(patients).to.be.an(\"array\");",
+              "",
+              "  const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+              "",
+              "  patients.forEach((p, index) => {",
+              "    pm.expect(p).to.have.property(\"id\").that.is.a(\"number\");",
+              "    pm.expect(p).to.have.property(\"firstName\").that.is.a(\"string\");",
+              "    pm.expect(p).to.have.property(\"lastName\").that.is.a(\"string\");",
+              "    pm.expect(p).to.have.property(\"email\");",
+              "",
+              "    const email = String(p.email || \"\").trim();",
+              "",
+              "    pm.expect(",
+              "      email,",
+              "      `Patient at index ${index} email does not match email format`",
+              "    ).to.match(emailRegex);",
+              "  });",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "id": "da4abb2a-40aa-4a58-92ce-3ec99ba9e8f5",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/patients",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "patients"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "appointments",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "0f3b45a9-6c09-4471-8255-463448289f80",
+            "exec": [
+              "// 1) Assert status 200 and JSON content-type",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Content-Type is application/json\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+              "});",
+              "",
+              "// 2) Parse response body and assert it's an array with at least one item",
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Response is an array with at least one item\", function () {",
+              "    pm.expect(jsonData).to.be.an(\"array\");",
+              "    pm.expect(jsonData.length).to.be.at.least(1);",
+              "});",
+              "",
+              "// Helper function to validate ISO 8601 date string",
+              "function isValidISO8601Date(dateString) {",
+              "    const date = new Date(dateString);",
+              "    return !isNaN(date.getTime()) && typeof dateString === \"string\";",
+              "}",
+              "",
+              "// 3) & 4) Validate each appointment object structure and date fields",
+              "pm.test(\"Each appointment has valid structure and properties\", function () {",
+              "    jsonData.forEach((appointment, index) => {",
+              "        // Validate top-level properties",
+              "        pm.expect(appointment).to.have.property(\"id\").that.is.a(\"number\");",
+              "        pm.expect(appointment).to.have.property(\"dateTime\").that.is.a(\"string\");",
+              "        pm.expect(appointment).to.have.property(\"durationMinutes\").that.is.a(\"number\");",
+              "        pm.expect(appointment).to.have.property(\"reason\").that.is.a(\"string\");",
+              "        pm.expect(appointment).to.have.property(\"status\").that.is.a(\"string\");",
+              "        pm.expect(appointment).to.have.property(\"patientId\").that.is.a(\"number\");",
+              "        pm.expect(appointment).to.have.property(\"createdAt\").that.is.a(\"string\");",
+              "        pm.expect(appointment).to.have.property(\"updatedAt\").that.is.a(\"string\");",
+              "",
+              "        // Validate nested Patient object",
+              "        pm.expect(appointment).to.have.property(\"Patient\").that.is.an(\"object\");",
+              "        pm.expect(appointment.Patient).to.have.property(\"id\").that.is.a(\"number\");",
+              "        pm.expect(appointment.Patient).to.have.property(\"firstName\").that.is.a(\"string\");",
+              "        pm.expect(appointment.Patient).to.have.property(\"lastName\").that.is.a(\"string\");",
+              "        pm.expect(appointment.Patient).to.have.property(\"phone\").that.is.a(\"string\");",
+              "",
+              "        // 4) Validate date fields parse as valid dates",
+              "        pm.expect(isValidISO8601Date(appointment.dateTime), \"dateTime should be valid ISO 8601 date at index \" + index).to.be.true;",
+              "        pm.expect(isValidISO8601Date(appointment.createdAt), \"createdAt should be valid ISO 8601 date at index \" + index).to.be.true;",
+              "        pm.expect(isValidISO8601Date(appointment.updatedAt), \"updatedAt should be valid ISO 8601 date at index \" + index).to.be.true;",
+              "    });",
+              "});",
+              "",
+              "// 5) Ensure no appointment has durationMinutes <= 0",
+              "pm.test(\"No appointment has durationMinutes <= 0\", function () {",
+              "    jsonData.forEach((appointment, index) => {",
+              "        pm.expect(appointment.durationMinutes, \"durationMinutes at index \" + index + \" should be greater than 0\").to.be.above(0);",
+              "    });",
+              "});",
+              "",
+              "// 6) Save notable values to environment variables",
+              "if (jsonData.length > 0) {",
+              "    const firstAppointment = jsonData[0];",
+              "    ",
+              "    if (firstAppointment.id !== undefined && firstAppointment.id !== null) {",
+              "        pm.environment.set(\"firstAppointmentId\", firstAppointment.id);",
+              "    }",
+              "    ",
+              "    if (firstAppointment.Patient && firstAppointment.Patient.id !== undefined && firstAppointment.Patient.id !== null) {",
+              "        pm.environment.set(\"firstPatientId\", firstAppointment.Patient.id);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "8519df09-680b-4a85-bf52-495a80535c77",
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "id": "037d06ea-899e-4352-93cf-b265a70097d5",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/appointments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "id": "ea22f8d3-05d3-440d-a6d9-e4a700a62b67",
+      "key": "firstPatientId",
+      "value": ""
+    }
+  ]
+}

@@ -2,20 +2,22 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { initDb } from "../../../lib/initDb";
-import Patient from "../../../models/Patient";
+import { createContainer } from "../../../di/container";
 
 export async function GET() {
   try {
     await initDb();
 
-    const patients = await Patient.findAll({
-      order: [["createdAt", "DESC"]],
-    });
+    const { patientService } = createContainer();
+    const patients = await patientService.listPatients();
 
-    return NextResponse.json(patients);
+    return NextResponse.json(patients, { status: 200 });
   } catch (err) {
     console.error("GET /api/patients error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -24,24 +26,17 @@ export async function POST(request) {
     await initDb();
 
     const body = await request.json();
-    const { firstName, lastName, phone, email, dateOfBirth, notes } = body;
 
-    if (!firstName || !lastName) {
-      return new NextResponse("Missing required fields", { status: 400 });
-    }
-
-    const patient = await Patient.create({
-      firstName,
-      lastName,
-      phone,
-      email,
-      dateOfBirth: dateOfBirth || null,
-      notes,
-    });
+    const { patientService } = createContainer();
+    const patient = await patientService.createPatient(body);
 
     return NextResponse.json(patient, { status: 201 });
   } catch (err) {
     console.error("POST /api/patients error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+
+    const status = err?.status || 500;
+    const message = err?.message || "Internal Server Error";
+
+    return NextResponse.json({ message }, { status });
   }
 }

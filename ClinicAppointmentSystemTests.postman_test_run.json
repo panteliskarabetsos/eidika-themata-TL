@@ -1,0 +1,200 @@
+{
+	"id": "540a76e3-d3ee-42bc-96d9-08298d569c9e",
+	"name": "ClinicAppointmentSystemTests",
+	"timestamp": "2025-12-11T18:48:12.575Z",
+	"collection_id": "15f05d1b-695f-46ae-a2ac-e73b056fe66d",
+	"folder_id": 0,
+	"environment_id": "88ec50a9-706b-47b6-b31a-de091885c5c1",
+	"totalPass": 13,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-12-11T18:48:11.955Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "89718b9a-2af8-4706-9d7f-66f3f19d0b59",
+			"name": "Post data",
+			"url": "http://localhost:3000/api/auth/login",
+			"time": 99,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Successful POST request": true,
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Successful POST request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				99
+			],
+			"allTests": [
+				{
+					"Successful POST request": true,
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "c299ed85-73a2-4e4e-9ee8-1df8ce4f766c",
+			"name": "login",
+			"url": "http://localhost:3000/api/auth/login",
+			"time": 60,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response time is below 1000ms": true,
+				"Response has token property (string)": true,
+				"Response has user.id property (number)": true,
+				"Response has user.username property (string)": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is below 1000ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has token property (string)": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has user.id property (number)": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has user.username property (string)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				60
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response time is below 1000ms": true,
+					"Response has token property (string)": true,
+					"Response has user.id property (number)": true,
+					"Response has user.username property (string)": true
+				}
+			]
+		},
+		{
+			"id": "da4abb2a-40aa-4a58-92ce-3ec99ba9e8f5",
+			"name": "patients",
+			"url": "http://localhost:3000/api/patients",
+			"time": 7,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "037d06ea-899e-4352-93cf-b265a70097d5",
+			"name": "appointments",
+			"url": "http://localhost:3000/api/appointments",
+			"time": 7,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Content-Type is application/json": true,
+				"Response is an array with at least one item": true,
+				"Each appointment has valid structure and properties": true,
+				"No appointment has durationMinutes <= 0": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is an array with at least one item": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Each appointment has valid structure and properties": {
+					"pass": 1,
+					"fail": 0
+				},
+				"No appointment has durationMinutes <= 0": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Content-Type is application/json": true,
+					"Response is an array with at least one item": true,
+					"Each appointment has valid structure and properties": true,
+					"No appointment has durationMinutes <= 0": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 173,
+	"collection": {
+		"requests": [
+			{
+				"id": "89718b9a-2af8-4706-9d7f-66f3f19d0b59",
+				"method": "POST"
+			},
+			{
+				"id": "c299ed85-73a2-4e4e-9ee8-1df8ce4f766c",
+				"method": "POST"
+			},
+			{
+				"id": "da4abb2a-40aa-4a58-92ce-3ec99ba9e8f5",
+				"method": "GET"
+			},
+			{
+				"id": "037d06ea-899e-4352-93cf-b265a70097d5",
+				"method": "GET"
+			}
+		]
+	}
+}

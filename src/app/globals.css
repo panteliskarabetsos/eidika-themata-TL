@@ -23,7 +23,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Layout */
+/*layout */
 .page {
   min-height: 100vh;
   padding: 1.5rem 2rem;
@@ -35,7 +35,6 @@ body {
   );
 }
 
-/* Top bar */
 .top-bar {
   display: flex;
   align-items: flex-end;
@@ -465,7 +464,6 @@ body {
   border-bottom: 1px solid rgba(148, 163, 184, 0.35);
 }
 
-/* MAIN LAYOUT: brand | nav | user */
 .top-bar-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -484,7 +482,6 @@ body {
   position: relative;
 }
 
-/* “αιωρούμενο” + */
 .brand-mark {
   width: 40px;
   height: 40px;
@@ -528,7 +525,7 @@ body {
   user-select: none;
 }
 
-/* Title block */
+/* Title */
 
 .app-title-wrap {
   display: flex;
@@ -564,8 +561,6 @@ body {
   color: #6b7280;
 }
 
-/* NAV center capsule */
-
 .top-nav {
   display: inline-flex;
   align-items: center;
@@ -576,7 +571,7 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.4);
   box-shadow: 0 10px 25px rgba(148, 163, 184, 0.35);
 
-  justify-self: center; /* center in the middle column */
+  justify-self: center;
   max-width: 100%;
 }
 
@@ -609,13 +604,11 @@ body {
   box-shadow: 0 12px 26px rgba(79, 70, 229, 0.6);
 }
 
-/* User info – sticks to the right */
-
 .header-user {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  justify-self: end; /* right side of header */
+  justify-self: end;
 }
 
 .header-user-avatar {
@@ -661,19 +654,12 @@ body {
   border-radius: 999px;
 }
 
-/* Responsive */
-
 @media (max-width: 980px) {
   .top-bar-inner {
     padding-inline: 1.25rem;
   }
 }
 
-/* Stack on mobile: 
-   row 1: brand
-   row 2: nav
-   row 3: user avatar + logout 
-*/
 @media (max-width: 780px) {
   .top-bar-inner {
     display: flex;
@@ -706,10 +692,9 @@ body {
   }
 }
 
-/* Patients table – force dark text */
 .patients-table tbody tr,
 .patients-table tbody td {
-  color: #0f172a !important; /* σκούρο γκρι/μαύρο */
+  color: #0f172a !important;
 }
 
 .patients-table tbody tr {

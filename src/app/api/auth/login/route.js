@@ -2,49 +2,23 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { initDb } from "../../../../lib/initDb";
-import User from "../../../../models/User";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { createContainer } from "../../../../di/container.js";
 
 export async function POST(request) {
   try {
     await initDb();
 
     const body = await request.json();
-    const { username, password } = body;
+    const { authService } = createContainer();
 
-    if (!username || !password) {
-      return new NextResponse("Missing credentials", { status: 400 });
-    }
+    const result = await authService.login(body);
 
-    const user = await User.findOne({ where: { username } });
-
-    if (!user) {
-      return new NextResponse("Invalid username or password", { status: 401 });
-    }
-
-    const isValid = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isValid) {
-      return new NextResponse("Invalid username or password", { status: 401 });
-    }
-
-    const payload = {
-      id: user.id,
-      username: user.username,
-      fullName: user.fullName,
-    };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    return NextResponse.json({
-      token,
-      user: payload,
-    });
+    return NextResponse.json(result, { status: 200 });
   } catch (err) {
-    console.error(err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error("POST /api/auth/login error:", err);
+
+    const status = err?.status || 500;
+    const message = err?.message || "Internal Server Error";
+    return NextResponse.json({ message }, { status });
   }
 }

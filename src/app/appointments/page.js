@@ -13,7 +13,7 @@ export default function AppointmentsPage() {
   const [error, setError] = useState("");
   const [filterDate, setFilterDate] = useState("");
 
-  //φόρμα δημιουργίας
+  //φόρμα προσθήκης ραντεβού
   const [form, setForm] = useState({
     patientId: "",
     date: "",

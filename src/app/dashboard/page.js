@@ -172,7 +172,7 @@ export default function DashboardPage() {
                 <div className="stat-label">Ραντεβού σήμερα</div>
                 <div className="stat-value">{todayAppointmentsCount}</div>
                 <div className="stat-helper">
-                  Προγραμματισμένα ραντεβού για τη σημερινή ημερομηνία.
+                  Προγραμματισμένα ραντεβού για σήμερα.
                 </div>
               </div>
             </div>
@@ -181,9 +181,7 @@ export default function DashboardPage() {
 
         <div className="card">
           <h2 className="card-title">Γρήγορες ενέργειες</h2>
-          <p className="card-subtitle">
-            Συχνές λειτουργίες για την καθημερινή διαχείριση.
-          </p>
+          <p className="card-subtitle">Εργαλεία για γρήγορη πλοήγηση.</p>
 
           <div className="quick-actions">
             <Link href="/patients" className="quick-action">
@@ -200,12 +198,15 @@ export default function DashboardPage() {
               </div>
             </Link>
 
-            <div className="quick-action ">
-              <div className="quick-action-title">Ημερολόγιο ημέρας</div>
+            <Link href="/admins" className="quick-action">
+              <div className="quick-action-title">Προσθήκη Διαχειριστή</div>
               <div className="quick-action-desc">
-                Επισκόπηση ραντεβού ανά ημέρα (υπό ανάπτυξη).
+                Προβολή λίστας διαχειριστών και δημιουργία νέου.
               </div>
-            </div>
+            </Link>
+            <Link href="/docs/report.pdf" className="quick-action">
+              <div className="quick-action-title">Προβολή αναφοράς (PDF)</div>
+            </Link>
           </div>
         </div>
       </section>

@@ -2,27 +2,22 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { initDb } from "../../../lib/initDb.js";
-import Appointment from "../../../models/Appointment.js";
-import Patient from "../../../models/Patient.js";
+import { createContainer } from "../../../di/container.js";
 
 export async function GET() {
   try {
     await initDb();
 
-    const appointments = await Appointment.findAll({
-      order: [["dateTime", "ASC"]],
-      include: [
-        {
-          model: Patient,
-          attributes: ["id", "firstName", "lastName", "phone"],
-        },
-      ],
-    });
+    const { appointmentService } = createContainer();
+    const appointments = await appointmentService.listAppointments();
 
-    return NextResponse.json(appointments);
+    return NextResponse.json(appointments, { status: 200 });
   } catch (err) {
     console.error("GET /api/appointments error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -31,23 +26,15 @@ export async function POST(request) {
     await initDb();
 
     const body = await request.json();
-    const { patientId, dateTime, durationMinutes, reason } = body;
-
-    if (!patientId || !dateTime) {
-      return new NextResponse("Missing required fields", { status: 400 });
-    }
-
-    const appointment = await Appointment.create({
-      patientId,
-      dateTime: new Date(dateTime),
-      durationMinutes: durationMinutes || 30,
-      reason: reason || null,
-      status: "scheduled",
-    });
+    const { appointmentService } = createContainer();
+    const appointment = await appointmentService.createAppointment(body);
 
     return NextResponse.json(appointment, { status: 201 });
   } catch (err) {
     console.error("POST /api/appointments error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+
+    const status = err?.status || 500;
+    const message = err?.message || "Internal Server Error";
+    return NextResponse.json({ message }, { status });
   }
 }

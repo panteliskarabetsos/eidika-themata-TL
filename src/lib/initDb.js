@@ -12,7 +12,7 @@ export async function initDb() {
     await sequelize.authenticate();
     console.log("Connected to database.");
 
-    // Σχέσεις
+    //σχέσεις
     Patient.hasMany(Appointment, {
       foreignKey: "patientId",
       onDelete: "CASCADE",

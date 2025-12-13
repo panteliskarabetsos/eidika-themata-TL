@@ -1,13 +1,23 @@
-// src/app/patients/page.js
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
+function toDateInputValue(dateLike) {
+  if (!dateLike) return "";
+  const d = new Date(dateLike);
+  if (Number.isNaN(d.getTime())) return "";
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export default function PatientsPage() {
   const router = useRouter();
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
@@ -21,9 +31,28 @@ export default function PatientsPage() {
     notes: "",
   });
 
+  // Edit modal state
+  const [editingPatient, setEditingPatient] = useState(null);
+  const [editForm, setEditForm] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    dateOfBirth: "",
+    notes: "",
+  });
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const [deletingId, setDeletingId] = useState(null);
+
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleEditChange(e) {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
   }
 
   useEffect(() => {
@@ -34,6 +63,7 @@ export default function PatientsPage() {
       return;
     }
     fetchPatients();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function fetchPatients() {
@@ -60,7 +90,7 @@ export default function PatientsPage() {
       setPatients(data);
     } catch (err) {
       console.error(err);
-      setError("Απρόσμενο σφάλμα");
+      setError("σφάλμα");
       setPatients([]);
     } finally {
       setLoading(false);
@@ -108,18 +138,107 @@ export default function PatientsPage() {
       });
     } catch (err) {
       console.error(err);
-      setError("Απρόσμενο σφάλμα κατά την καταχώρηση");
+      setError("σφάλμα κατά την καταχώρηση");
     } finally {
       setCreating(false);
     }
   }
 
-  function handleLogout() {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+  function openEditModal(p) {
+    setError("");
+    setEditingPatient(p);
+    setEditForm({
+      firstName: p.firstName || "",
+      lastName: p.lastName || "",
+      phone: p.phone || "",
+      email: p.email || "",
+      dateOfBirth: toDateInputValue(p.dateOfBirth),
+      notes: p.notes || "",
+    });
+  }
+
+  function closeEditModal() {
+    setEditingPatient(null);
+    setSavingEdit(false);
+  }
+
+  async function handleUpdatePatient(e) {
+    e.preventDefault();
+    if (!editingPatient) return;
+
+    setError("");
+    setSavingEdit(true);
+
+    if (!editForm.firstName.trim() || !editForm.lastName.trim()) {
+      setError("Το όνομα και το επώνυμο είναι υποχρεωτικά.");
+      setSavingEdit(false);
+      return;
     }
-    router.push("/login");
+
+    try {
+      const res = await fetch(`/api/patients/${editingPatient.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+        body: JSON.stringify(editForm),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Failed to update patient:", text);
+        setError(text || "Αποτυχία ενημέρωσης ασθενή");
+        return;
+      }
+
+      const updated = await res.json();
+
+      setPatients((prev) =>
+        prev.map((p) => (p.id === updated.id ? updated : p))
+      );
+
+      closeEditModal();
+    } catch (err) {
+      console.error(err);
+      setError("Απρόσμενο σφάλμα κατά την ενημέρωση");
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
+  async function handleDeletePatient(p) {
+    setError("");
+
+    const ok = window.confirm(
+      `Σίγουρα θέλεις να διαγράψεις τον/την ${p.firstName} ${p.lastName};`
+    );
+    if (!ok) return;
+
+    setDeletingId(p.id);
+
+    try {
+      const res = await fetch(`/api/patients/${p.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      });
+
+      if (!res.ok && res.status !== 204) {
+        const text = await res.text();
+        console.error("Failed to delete patient:", text);
+        setError(text || "Αποτυχία διαγραφής ασθενή");
+        return;
+      }
+
+      setPatients((prev) => prev.filter((x) => x.id !== p.id));
+    } catch (err) {
+      console.error(err);
+      setError("Απρόσμενο σφάλμα κατά τη διαγραφή");
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   const filteredPatients = useMemo(() => {
@@ -137,7 +256,6 @@ export default function PatientsPage() {
 
   return (
     <main className="page">
-      {/* Top bar */}
       <header className="top-bar">
         <div className="top-bar-left">
           <h1 className="app-title">Clinic Appointment System</h1>
@@ -146,7 +264,7 @@ export default function PatientsPage() {
       </header>
 
       <section className="content-grid">
-        {/* Φόρμα νέου ασθενή */}
+        {/* Φόρμα προσθήκης νέου ασθενή */}
         <div className="card">
           <h2 className="card-title">Νέος ασθενής</h2>
           <p className="card-subtitle">
@@ -265,6 +383,7 @@ export default function PatientsPage() {
                     <th>Τηλέφωνο</th>
                     <th>Email</th>
                     <th>Ημ. δημιουργίας</th>
+                    <th style={{ width: 220 }}>Ενέργειες</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -282,6 +401,27 @@ export default function PatientsPage() {
                           ? new Date(p.createdAt).toLocaleString("el-GR")
                           : "-"}
                       </td>
+                      <td>
+                        <div
+                          style={{ display: "flex", gap: 8, flexWrap: "wrap" }}
+                        >
+                          <button
+                            className="btn-secondary"
+                            type="button"
+                            onClick={() => openEditModal(p)}
+                          >
+                            Επεξεργασία
+                          </button>
+                          <button
+                            className="btn-danger"
+                            type="button"
+                            onClick={() => handleDeletePatient(p)}
+                            disabled={deletingId === p.id}
+                          >
+                            {deletingId === p.id ? "Διαγραφή..." : "Διαγραφή"}
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -290,6 +430,111 @@ export default function PatientsPage() {
           )}
         </div>
       </section>
+
+      {/* EDIT MODAL*/}
+      {editingPatient && (
+        <div className="modal-backdrop" onClick={closeEditModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>
+                Επεξεργασία: {editingPatient.firstName}{" "}
+                {editingPatient.lastName}
+              </h3>
+            </div>
+
+            <form className="form" onSubmit={handleUpdatePatient}>
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Όνομα *</label>
+                  <input
+                    className="input"
+                    name="firstName"
+                    value={editForm.firstName}
+                    onChange={handleEditChange}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Επώνυμο *</label>
+                  <input
+                    className="input"
+                    name="lastName"
+                    value={editForm.lastName}
+                    onChange={handleEditChange}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Τηλέφωνο</label>
+                  <input
+                    className="input"
+                    name="phone"
+                    value={editForm.phone}
+                    onChange={handleEditChange}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Email</label>
+                  <input
+                    className="input"
+                    name="email"
+                    value={editForm.email}
+                    onChange={handleEditChange}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Ημερομηνία γέννησης</label>
+                  <input
+                    className="input"
+                    type="date"
+                    name="dateOfBirth"
+                    value={editForm.dateOfBirth}
+                    onChange={handleEditChange}
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label>Σημειώσεις</label>
+                <textarea
+                  className="textarea"
+                  name="notes"
+                  rows={3}
+                  value={editForm.notes}
+                  onChange={handleEditChange}
+                />
+              </div>
+
+              {error && <div className="error-text">{error}</div>}
+
+              <div
+                className="modal-actions"
+                style={{ display: "flex", gap: 10 }}
+              >
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={closeEditModal}
+                  disabled={savingEdit}
+                >
+                  Ακύρωση
+                </button>
+                <button
+                  className="btn-primary"
+                  type="submit"
+                  disabled={savingEdit}
+                >
+                  {savingEdit ? "Αποθήκευση..." : "Αποθήκευση"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

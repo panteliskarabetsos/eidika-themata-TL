@@ -1,4 +1,3 @@
-// src/app/page.js
 "use client";
 
 import Link from "next/link";
@@ -23,8 +22,8 @@ export default function HomePage() {
         <h1 className="landing-title">Clinic Appointment System</h1>
 
         <p className="landing-subtitle">
-          Μικρό σύστημα διαχείρισης ραντεβού για ιατρείο, με ασθενείς, ραντεβού
-          και dashboard για τον γιατρό ή τη γραμματεία.
+          Σύστημα διαχείρισης αρχείου για ιατρείο, με λίστα ασθενών, ραντεβού
+          και διαχειριστές.
         </p>
 
         <div className="landing-actions">
@@ -36,7 +35,7 @@ export default function HomePage() {
             href="/dashboard"
             className="btn-outline landing-secondary-link"
           >
-            Είμαι ήδη συνδεδεμένος →
+            Είμαι ήδη συνδεδεμένος
           </Link>
         </div>
 
