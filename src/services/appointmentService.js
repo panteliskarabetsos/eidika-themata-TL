@@ -30,7 +30,6 @@ export function createAppointmentService({ appointmentRepository }) {
         status: "scheduled",
       });
 
-      // Επιστρέφουμε με include του Patient (όπως κάνεις στο PUT)
       const reloaded = await appointmentRepository.findByIdWithPatient(
         created.id
       );
