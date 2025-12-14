@@ -280,7 +280,7 @@ export default function PatientsPage() {
                   name="firstName"
                   value={form.firstName}
                   onChange={handleChange}
-                  placeholder="π.χ. Γιάννης"
+                  placeholder="π.χ. Γιώργος"
                 />
               </div>
               <div className="form-field">
@@ -290,7 +290,7 @@ export default function PatientsPage() {
                   name="lastName"
                   value={form.lastName}
                   onChange={handleChange}
-                  placeholder="π.χ. Παπαδόπουλος"
+                  placeholder="π.χ. Νίκας"
                 />
               </div>
             </div>
@@ -303,7 +303,7 @@ export default function PatientsPage() {
                   name="phone"
                   value={form.phone}
                   onChange={handleChange}
-                  placeholder="π.χ. 69xxxxxxxx"
+                  placeholder="π.χ. 6912345678"
                 />
               </div>
               <div className="form-field">
@@ -313,7 +313,7 @@ export default function PatientsPage() {
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  placeholder="π.χ. patient@example.com"
+                  placeholder="π.χ. patient@gmail.com"
                 />
               </div>
             </div>
@@ -339,7 +339,7 @@ export default function PatientsPage() {
                 rows={3}
                 value={form.notes}
                 onChange={handleChange}
-                placeholder="Σύντομες κλινικές σημειώσεις ή άλλα σχόλια..."
+                placeholder="σημειώσεις για τον ασθενή ή άλλες πληροφορίες..."
               />
             </div>
 
