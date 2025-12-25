@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Clinic Appointment System (Course Project)
 
-## Getting Started
+Web εφαρμογή τύπου **CRUD** για διαχείριση **ασθενών** και **ραντεβού** ιατρείου.
 
-First, run the development server:
+> Πανεπιστημιακό project για το μάθημα **Ειδικά Θέματα Τεχνολογίας Λογισμικού (2025–2026)**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Τι κάνει η εφαρμογή
+- **Σύνδεση διαχειριστή (JWT)** και προστασία των σελίδων διαχείρισης
+- **Ασθενείς (Patients)**
+  - δημιουργία, προβολή λίστας, αναζήτηση
+  - επεξεργασία και διαγραφή
+- **Ραντεβού (Appointments)**
+  - δημιουργία, προβολή λίστας
+  - αλλαγή κατάστασης (π.χ. scheduled/completed/cancelled)
+  - επεξεργασία και διαγραφή
+- **Διαχειριστές (Admins)**
+  - προβολή λίστας
+  - δημιουργία / επεξεργασία / διαγραφή λογαριασμών
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Αρχιτεκτονική & Τεχνολογίες
+Η εφαρμογή ακολουθεί **3-tier αρχιτεκτονική**:
 
-## Learn More
+- **Front-end (SPA):** Next.js (React / App Router)
+- **Business Logic:** Next.js API Routes (REST endpoints)
+- **Database:** PostgreSQL (Neon) μέσω **Sequelize ORM**
 
-To learn more about Next.js, take a look at the following resources:
+**Auth**
+- JWT (Bearer token)
+- bcryptjs για hashing κωδικών
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Δομή φακέλων (ενδεικτικά)
+- `src/app/` → UI pages (`/dashboard`, `/patients`, `/appointments`, `/admins`)
+- `src/app/api/` → REST API endpoints
+- `src/models/` → Sequelize Models (User, Patient, Appointment)
+- `src/lib/` → DB init, Sequelize instance, auth helpers
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Report (PDF)
+Η αναφορά της εργασίας υπάρχει στο repo και σερβίρεται ως static αρχείο:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Διαδρομή εφαρμογής: **`/docs/report.pdf`**
+- Τοποθεσία αρχείου: `public/docs/report.pdf`
+- GitHub file: [`public/docs/report.pdf`](public/docs/report.pdf)
+
+**Local:** http://localhost:3000/docs/report.pdf  
+**Deployed:** https://<your-vercel-domain>/docs/report.pdf
+
+---
+
+## Περιβάλλον (Environment Variables)
+Δημιούργησε `.env.local`:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
+JWT_SECRET=" "
