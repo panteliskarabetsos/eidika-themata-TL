@@ -2,28 +2,34 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { initDb } from "../../../lib/initDb";
-import User from "../../../models/User";
-import bcrypt from "bcryptjs";
+import { createContainer } from "../../../di/container"; // <--- Dependency Injection
+import { requireAuth } from "../../../lib/auth"; // <--- Security
 
-export async function GET() {
+export async function GET(request) {
   try {
     await initDb();
+    
+    const claims = requireAuth(request);
+    // Προαιρετικά: if (claims.role !== 'admin') return 403...
 
-    const users = await User.findAll({
-      attributes: [
-        "id",
-        "username",
-        "fullName",
-        "email",
-        "isActive",
-        "createdAt",
-      ],
+
+    const { userRepository } = createContainer(); 
+    
+    const users = await userRepository.findAll();
+
+    const safeUsers = users.map(u => {
+        const json = u.toJSON ? u.toJSON() : u;
+        const { passwordHash, ...safe } = json;
+        return safe;
     });
 
-    return NextResponse.json(users);
+    return NextResponse.json(safeUsers);
   } catch (err) {
-    console.error(err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error("GET /api/users error:", err);
+    return NextResponse.json(
+        { message: err?.message || "Internal Server Error" }, 
+        { status: err?.status || 500 }
+    );
   }
 }
 
@@ -32,37 +38,18 @@ export async function POST(request) {
     await initDb();
 
     const body = await request.json();
-    const { username, password, fullName, email } = body;
+    
+    // 3. Χρήση του Auth Service μέσω DI
+    const { authService } = createContainer();
+    
+    const newUser = await authService.register(body);
 
-    if (!username || !password || !fullName) {
-      return new NextResponse("Missing required fields", { status: 400 });
-    }
-
-    const existing = await User.findOne({ where: { username } });
-    if (existing) {
-      return new NextResponse("Username already exists", { status: 409 });
-    }
-
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    const user = await User.create({
-      username,
-      passwordHash,
-      fullName,
-      email,
-    });
-
-    return NextResponse.json(
-      {
-        id: user.id,
-        username: user.username,
-        fullName: user.fullName,
-        email: user.email,
-      },
-      { status: 201 }
-    );
+    return NextResponse.json(newUser, { status: 201 });
   } catch (err) {
-    console.error(err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error("POST /api/users error:", err);
+    return NextResponse.json(
+        { message: err?.message || "Internal Server Error" }, 
+        { status: err?.status || 500 }
+    );
   }
 }
