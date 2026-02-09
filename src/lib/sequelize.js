@@ -13,6 +13,7 @@ const sequelize =
   globalThis.__sequelize ??
   new Sequelize(url, {
     dialect: "postgres",
+    dialectModule: pg,
     logging: false,
     pool: {
       max: 3,
