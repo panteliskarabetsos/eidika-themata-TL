@@ -41,6 +41,7 @@ export function createAdminService({ userRepository, bcrypt }) {
         username,
         fullName: fullName || null,
         passwordHash,
+        role: "admin"
       });
 
       return sanitize(created);
