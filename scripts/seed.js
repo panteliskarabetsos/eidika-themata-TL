@@ -8,16 +8,13 @@ async function seed() {
   try {
     console.log("🌱 Starting database seed...");
 
-    // 1. Έλεγχος σύνδεσης
-    await sequelize.authenticate();
+ 
+   await sequelize.sync({ force: true });
     console.log("✅ Connected to database.");
 
-    // 2. Συγχρονισμός Πινάκων (Δημιουργεί τους πίνακες αν δεν υπάρχουν)
-    // Το { alter: true } προσαρμόζει τους πίνακες χωρίς να σβήσει δεδομένα
     await sequelize.sync({ alter: true });
     console.log("✅ Database synced.");
 
-    // 3. Δημιουργία Admin User
     const existingAdmin = await User.findOne({ where: { username: "admin" } });
 
     if (!existingAdmin) {

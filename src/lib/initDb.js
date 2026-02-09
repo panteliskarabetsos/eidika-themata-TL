@@ -1,33 +1,28 @@
-import sequelize from "@/lib/sequelize";
-import User from "@/models/User";
-import Patient from "@/models/Patient";
-import Appointment from "@/models/Appointment";
+import sequelize from "./sequelize.js";
+// ΠΡΟΣΟΧΗ: Βεβαιώσου ότι έχεις τα .js extensions
+import User from "../models/User.js";
+import Patient from "../models/Patient.js";
+import Appointment from "../models/Appointment.js";
 
-let isInitialized = false;
+let initialized = false;
 
 export async function initDb() {
-  if (isInitialized) return;
+  if (initialized) return;
 
   try {
+    // 1. ΟΡΙΣΜΟΣ ΣΧΕΣΕΩΝ (Εδώ είναι το κλειδί για το include)
+    Patient.hasMany(Appointment, { foreignKey: "patientId" });
+    Appointment.belongsTo(Patient, { foreignKey: "patientId" });
+
+    // 2. Σύνδεση και Συγχρονισμός
     await sequelize.authenticate();
-    console.log("Connected to database.");
+    // Το alter: true ενημερώνει τη βάση χωρίς να χάσεις δεδομένα
+    await sequelize.sync({ alter: true });
 
-    //σχέσεις
-    Patient.hasMany(Appointment, {
-      foreignKey: "patientId",
-      onDelete: "CASCADE",
-    });
-
-    Appointment.belongsTo(Patient, {
-      foreignKey: "patientId",
-    });
-
-    await sequelize.sync();
-    console.log("Models synchronized.");
-
-    isInitialized = true;
-  } catch (err) {
-    console.error("Unable to connect to the database:", err);
-    throw err;
+    initialized = true;
+    console.log("✅ Database initialized & Associations set.");
+  } catch (error) {
+    console.error("❌ Database init failed:", error);
+    throw error; // Πετάμε το error για να φανεί στα logs
   }
 }

@@ -552,12 +552,12 @@ export default function AppointmentsPage() {
                         <td>{patient?.phone || "-"}</td>
                         <td>{a.durationMinutes}ʼ</td>
                         <td>
-                          {a.status === "scheduled"
-                            ? "Προγραμματισμένο"
-                            : a.status === "completed"
-                            ? "Ολοκληρωμένο"
-                            : "Ακυρωμένο"}
-                        </td>
+                            {a.status === "scheduled"
+                              ? "Προγραμματισμένο"
+                              : a.status === "completed"
+                              ? "Ολοκληρωμένο"
+                              : "Ακυρωμένο"}
+                          </td>
                         <td>{a.reason || "-"}</td>
                         <td>
                           <div
@@ -606,3 +606,37 @@ export default function AppointmentsPage() {
     </main>
   );
 }
+
+
+function renderStatusBadge(status) {
+    let style = {
+      padding: "2px 8px",
+      borderRadius: "12px",
+      fontSize: "0.75rem",
+      fontWeight: "600",
+      display: "inline-block",
+      textAlign: "center",
+    };
+
+    switch (status) {
+      case "completed":
+        return (
+          <span style={{ ...style, backgroundColor: "#dcfce7", color: "#166534" }}>
+            Ολοκληρωμένο
+          </span>
+        );
+      case "cancelled":
+        return (
+          <span style={{ ...style, backgroundColor: "#fee2e2", color: "#991b1b" }}>
+            Ακυρωμένο
+          </span>
+        );
+      case "scheduled":
+      default:
+        return (
+          <span style={{ ...style, backgroundColor: "#dbeafe", color: "#1e40af" }}>
+            Προγραμματισμένο
+          </span>
+        );
+    }
+  }

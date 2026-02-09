@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { initDb } from "../../../../lib/initDb.js";
 import { createContainer } from "../../../../di/container.js";
-import { requireAuth } from "../../../../lib/auth.js";
+import { requireAuth } from "../../../../lib/auth.js"; // Μην ξεχνάς το import!
 
 function parseNumericId(id) {
   const numericId = Number(id);
@@ -11,11 +11,13 @@ function parseNumericId(id) {
   return numericId;
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(request, context) {
   try {
     await initDb();
-requireAuth(request);
+    requireAuth(request);
+    const params = await context.params;
     const numericId = parseNumericId(params.id);
+
     if (!numericId) {
       return NextResponse.json(
         { message: "Invalid appointment id" },
@@ -37,11 +39,14 @@ requireAuth(request);
   }
 }
 
-export async function DELETE(request, { params }) {
+
+export async function DELETE(request, context) {
   try {
     await initDb();
-requireAuth(request);
+    requireAuth(request);
+    const params = await context.params; 
     const numericId = parseNumericId(params.id);
+
     if (!numericId) {
       return NextResponse.json(
         { message: "Invalid appointment id" },

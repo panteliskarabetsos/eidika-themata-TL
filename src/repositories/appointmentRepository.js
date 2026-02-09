@@ -1,3 +1,4 @@
+
 export function createAppointmentRepository({ Appointment, Patient }) {
   const patientInclude = [
     {
