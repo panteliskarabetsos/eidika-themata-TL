@@ -27,6 +27,7 @@ export function createAuthService({ userRepository, bcrypt, jwt, jwtSecret }) {
         id: user.id,
         username: user.username,
         fullName: user.fullName,
+        role: user.role,
       };
 
       if (!jwtSecret) {
