@@ -25,7 +25,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     await initDb();
-
+requireAuth(request);
     const body = await request.json();
     const { appointmentService } = createContainer();
     const appointment = await appointmentService.createAppointment(body);
