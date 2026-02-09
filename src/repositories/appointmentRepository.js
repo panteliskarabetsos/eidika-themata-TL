@@ -18,12 +18,11 @@ export function createAppointmentRepository({ Appointment, Patient }) {
       return Appointment.findByPk(id);
     },
 
-    async findByIdWithPatient(id) {
-      const appt = await Appointment.findByPk(id);
-      if (!appt) return null;
-      await appt.reload({ include: patientInclude });
-      return appt;
-    },
+ findByIdWithPatient(id) {
+  return Appointment.findByPk(id, {
+    include: patientInclude
+  });
+},
 
     create(data) {
       return Appointment.create(data);
