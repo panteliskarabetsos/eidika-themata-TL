@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { initDb } from "../../../../lib/initDb.js";
 import { createContainer } from "../../../../di/container.js";
+import { requireAuth } from "../../../../lib/auth.js";
 
 function parseNumericId(id) {
   const numericId = Number(id);
@@ -13,7 +14,7 @@ function parseNumericId(id) {
 export async function PUT(request, { params }) {
   try {
     await initDb();
-
+requireAuth(request);
     const numericId = parseNumericId(params.id);
     if (!numericId) {
       return NextResponse.json(
@@ -39,7 +40,7 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     await initDb();
-
+requireAuth(request);
     const numericId = parseNumericId(params.id);
     if (!numericId) {
       return NextResponse.json(
