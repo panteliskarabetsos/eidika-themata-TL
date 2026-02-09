@@ -7,6 +7,7 @@ import { createContainer } from "../../../di/container.js";
 export async function GET() {
   try {
     await initDb();
+    requireAuth(request);
 
     const { appointmentService } = createContainer();
     const appointments = await appointmentService.listAppointments();
