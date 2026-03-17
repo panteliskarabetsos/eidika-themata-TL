@@ -2,9 +2,8 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { initDb } from "../../../lib/initDb";
-import { createContainer } from "../../../di/container"; // <--- Dependency Injection
-import { requireAuth } from "../../../lib/auth"; // <--- Security
-
+import { createContainer } from "../../../di/container"; 
+import { requireAuth } from "../../../lib/auth";
 export async function GET(request) {
   try {
     await initDb();
