@@ -6,14 +6,14 @@ import bcrypt from "bcryptjs";
 
 async function seed() {
   try {
-    console.log("🌱 Starting database seed...");
+    console.log("Starting database seed...");
 
  
    await sequelize.sync({ force: true });
-    console.log("✅ Connected to database.");
+    console.log("Connected to database.");
 
     await sequelize.sync({ alter: true });
-    console.log("✅ Database synced.");
+    console.log("Database synced.");
 
     const existingAdmin = await User.findOne({ where: { username: "admin" } });
 
@@ -28,17 +28,17 @@ async function seed() {
         role: "admin",
         isActive: true
       });
-      console.log("✅ Admin user created successfully!");
-      console.log("👉 Username: admin");
-      console.log("👉 Password: 123456");
+      console.log("Admin user created successfully!");
+      console.log("Username: admin");
+      console.log("Password: 123456");
     } else {
-      console.log("ℹ️ Admin user already exists. Skipping creation.");
+      console.log("Admin user already exists. Skipping creation.");
     }
 
-    console.log("🚀 Seeding completed successfully.");
+    console.log("Seeding completed successfully.");
     process.exit(0);
   } catch (error) {
-    console.error("❌ Seeding failed:", error);
+    console.error("Seeding failed:", error);
     process.exit(1);
   }
 }
