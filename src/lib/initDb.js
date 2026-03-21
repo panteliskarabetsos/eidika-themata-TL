@@ -10,19 +10,19 @@ export async function initDb() {
   if (initialized) return;
 
   try {
-    // 1. ΟΡΙΣΜΟΣ ΣΧΕΣΕΩΝ (Εδώ είναι το κλειδί για το include)
+
     Patient.hasMany(Appointment, { foreignKey: "patientId" });
     Appointment.belongsTo(Patient, { foreignKey: "patientId" });
 
-    // 2. Σύνδεση και Συγχρονισμός
+ 
     await sequelize.authenticate();
-    // Το alter: true ενημερώνει τη βάση χωρίς να χάσεις δεδομένα
+  
     await sequelize.sync({ alter: true });
 
     initialized = true;
-    console.log("✅ Database initialized & Associations set.");
+    console.log("Database initialized & Associations set.");
   } catch (error) {
-    console.error("❌ Database init failed:", error);
+    console.error(" Database init failed:", error);
     throw error; // Πετάμε το error για να φανεί στα logs
   }
 }
